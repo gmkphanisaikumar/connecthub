@@ -169,8 +169,8 @@ io.on('connection', (socket) => {
 const PORT = process.env.PORT || 5000;
 
 // Use server.listen instead of app.listen (for Socket.IO)
-server.listen(PORT, () => {
-  console.log(`\n🚀 ConnectHub Server running on http://localhost:${PORT}`);
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`\n🚀 ConnectHub Server running on http://0.0.0.0:${PORT}`);
   console.log(`⚡ Socket.IO enabled for real-time chat`);
   console.log(`📁 Environment: ${process.env.NODE_ENV || 'development'}\n`);
 });
