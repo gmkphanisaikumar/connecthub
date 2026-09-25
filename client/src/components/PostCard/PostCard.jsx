@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import api from '../../utils/api';
+import api, { getImageUrl } from '../../utils/api';
 import toast from 'react-hot-toast';
 import {
   HiOutlineHeart,
@@ -122,7 +122,7 @@ const PostCard = ({ post, onPostUpdated, onPostDeleted }) => {
           <div className="w-11 h-11 bg-gradient-to-br from-primary-400 to-purple-500 rounded-full flex items-center justify-center shadow-md shadow-primary-500/15">
             {post.user?.profilePicture ? (
               <img
-                src={`http://localhost:5000${post.user.profilePicture}`}
+                src={getImageUrl(post.user.profilePicture)}
                 alt={post.user.username}
                 className="w-11 h-11 rounded-full object-cover"
               />
@@ -218,7 +218,7 @@ const PostCard = ({ post, onPostUpdated, onPostDeleted }) => {
       {post.image && (
         <div className="rounded-xl overflow-hidden mb-3 border border-gray-100 dark:border-gray-800">
           <img
-            src={`http://localhost:5000${post.image}`}
+            src={getImageUrl(post.image)}
             alt="Post"
             className="w-full max-h-96 object-cover"
           />
@@ -317,7 +317,7 @@ const PostCard = ({ post, onPostUpdated, onPostDeleted }) => {
                     <div className="w-8 h-8 bg-gradient-to-br from-gray-300 to-gray-400 dark:from-gray-600 dark:to-gray-700 rounded-full flex items-center justify-center shrink-0">
                       {comment.user?.profilePicture ? (
                         <img
-                          src={`http://localhost:5000${comment.user.profilePicture}`}
+                          src={getImageUrl(comment.user.profilePicture)}
                           alt={comment.user.username}
                           className="w-8 h-8 rounded-full object-cover"
                         />

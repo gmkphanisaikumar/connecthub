@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Layout from '../components/layout/Layout';
 import PostCard from '../components/PostCard/PostCard';
-import api from '../utils/api';
+import api, { getImageUrl } from '../utils/api';
 import toast from 'react-hot-toast';
 import {
   HiOutlineCalendar,
@@ -194,7 +194,7 @@ const Profile = () => {
               <div className="w-28 h-28 bg-gradient-to-br from-primary-400 to-purple-500 rounded-full border-4 border-white dark:border-gray-900 flex items-center justify-center shadow-xl shadow-primary-500/20">
                 {profileUser.profilePicture ? (
                   <img
-                    src={`http://localhost:5000${profileUser.profilePicture}`}
+                    src={getImageUrl(profileUser.profilePicture)}
                     alt={profileUser.username}
                     className="w-28 h-28 rounded-full object-cover"
                   />
@@ -364,7 +364,7 @@ const Profile = () => {
                         <img
                           src={
                             editPreview ||
-                            `http://localhost:5000${profileUser.profilePicture}`
+                            getImageUrl(profileUser.profilePicture)
                           }
                           alt="Preview"
                           className="w-24 h-24 rounded-full object-cover"

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useSocket } from '../context/SocketContext';
 import Layout from '../components/layout/Layout';
-import api from '../utils/api';
+import api, { getImageUrl } from '../utils/api';
 import toast from 'react-hot-toast';
 import {
   HiOutlineBell,
@@ -151,7 +151,7 @@ const Notifications = () => {
                     <div className="w-11 h-11 bg-gradient-to-br from-primary-400 to-purple-500 rounded-full flex items-center justify-center">
                       {notif.sender?.profilePicture ? (
                         <img
-                          src={`http://localhost:5000${notif.sender.profilePicture}`}
+                          src={getImageUrl(notif.sender.profilePicture)}
                           alt={notif.sender.username}
                           className="w-11 h-11 rounded-full object-cover"
                         />

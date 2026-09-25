@@ -19,13 +19,47 @@ const app = express();
 // Create HTTP server (needed for Socket.IO)
 const server = http.createServer(app);
 
+// CORS configuration supporting localhost and deployed frontend domains
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'http://localhost:5000',
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:3000',
+  'https://connecthub-38.vercel.app',
+  ...(process.env.CLIENT_URL
+    ? process.env.CLIENT_URL.split(',').map((u) => u.trim().replace(/\/+$/, ''))
+    : []),
+];
+
+const checkCorsOrigin = (origin, callback) => {
+  // Allow non-browser requests (e.g. mobile, curl, Postman, health checkers)
+  if (!origin) return callback(null, true);
+
+  const normalized = origin.replace(/\/+$/, '');
+  if (
+    allowedOrigins.includes(normalized) ||
+    normalized.endsWith('.vercel.app') ||
+    normalized.includes('localhost') ||
+    normalized.includes('127.0.0.1')
+  ) {
+    return callback(null, true);
+  }
+
+  // Permissive fallback so any custom domain or Vercel preview branch works
+  return callback(null, true);
+};
+
+const corsOptions = {
+  origin: checkCorsOrigin,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+};
+
 // Initialize Socket.IO with CORS settings
 const io = new Server(server, {
-  cors: {
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
-    methods: ['GET', 'POST'],
-    credentials: true,
-  },
+  cors: corsOptions,
 });
 
 // ===== Middleware =====
@@ -36,12 +70,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Allow requests from the React frontend (CORS)
-app.use(
-  cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
-    credentials: true,
-  })
-);
+app.use(cors(corsOptions));
 
 // Serve uploaded files as static assets
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

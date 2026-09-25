@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
 import { useAuth } from './AuthContext';
+import { SERVER_URL } from '../utils/api';
 
 const SocketContext = createContext(null);
 
@@ -14,9 +15,10 @@ export const SocketProvider = ({ children }) => {
   useEffect(() => {
     if (isAuthenticated && user) {
       // Connect to the backend Socket.IO server
-      socketRef.current = io('http://localhost:5000', {
+      socketRef.current = io(SERVER_URL, {
         reconnection: true,
         reconnectionAttempts: 5,
+        transports: ['websocket', 'polling'],
       });
 
       // Tell the server who we are

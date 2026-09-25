@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Layout from '../components/layout/Layout';
-import api from '../utils/api';
+import api, { getImageUrl } from '../utils/api';
 import toast from 'react-hot-toast';
 import {
   HiOutlineSearch,
@@ -90,7 +90,7 @@ const Search = () => {
           <div className="w-12 h-12 bg-gradient-to-br from-primary-400 to-purple-500 rounded-full flex items-center justify-center shrink-0 shadow-md shadow-primary-500/15">
             {userItem.profilePicture ? (
               <img
-                src={`http://localhost:5000${userItem.profilePicture}`}
+                src={getImageUrl(userItem.profilePicture)}
                 alt={userItem.username}
                 className="w-12 h-12 rounded-full object-cover"
               />

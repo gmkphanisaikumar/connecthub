@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
 import Layout from '../components/layout/Layout';
-import api from '../utils/api';
+import api, { getImageUrl } from '../utils/api';
 import toast from 'react-hot-toast';
 import {
   HiOutlinePaperAirplane,
@@ -265,7 +265,7 @@ const Chat = () => {
                         <div className="w-12 h-12 bg-gradient-to-br from-primary-400 to-purple-500 rounded-full flex items-center justify-center">
                           {conv.user.profilePicture ? (
                             <img
-                              src={`http://localhost:5000${conv.user.profilePicture}`}
+                              src={getImageUrl(conv.user.profilePicture)}
                               alt={conv.user.username}
                               className="w-12 h-12 rounded-full object-cover"
                             />
@@ -328,7 +328,7 @@ const Chat = () => {
                     <div className="w-10 h-10 bg-gradient-to-br from-primary-400 to-purple-500 rounded-full flex items-center justify-center">
                       {selectedUser.profilePicture ? (
                         <img
-                          src={`http://localhost:5000${selectedUser.profilePicture}`}
+                          src={getImageUrl(selectedUser.profilePicture)}
                           alt={selectedUser.username}
                           className="w-10 h-10 rounded-full object-cover"
                         />

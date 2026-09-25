@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import api from '../../utils/api';
+import api, { getImageUrl } from '../../utils/api';
 import toast from 'react-hot-toast';
 import { HiOutlinePhotograph, HiOutlineX, HiOutlineEmojiHappy } from 'react-icons/hi';
 
@@ -81,7 +81,7 @@ const CreatePost = ({ onPostCreated }) => {
           <div className="w-11 h-11 bg-gradient-to-br from-primary-400 to-purple-500 rounded-full flex items-center justify-center shrink-0 shadow-md shadow-primary-500/15">
             {user?.profilePicture ? (
               <img
-                src={`http://localhost:5000${user.profilePicture}`}
+                src={getImageUrl(user.profilePicture)}
                 alt={user.username}
                 className="w-11 h-11 rounded-full object-cover"
               />

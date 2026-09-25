@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useSocket } from '../../context/SocketContext';
-import api from '../../utils/api';
+import api, { getImageUrl } from '../../utils/api';
 import {
   HiOutlineHome,
   HiOutlineSearch,
@@ -116,7 +116,7 @@ const Navbar = () => {
               <div className="w-8 h-8 bg-gradient-to-br from-primary-400 to-purple-500 rounded-full flex items-center justify-center">
                 {user?.profilePicture ? (
                   <img
-                    src={`http://localhost:5000${user.profilePicture}`}
+                    src={getImageUrl(user.profilePicture)}
                     alt={user.username}
                     className="w-8 h-8 rounded-full object-cover"
                   />
