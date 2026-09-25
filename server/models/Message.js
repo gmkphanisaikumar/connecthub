@@ -1,0 +1,36 @@
+const mongoose = require('mongoose');
+
+// Each document represents a single chat message
+const messageSchema = new mongoose.Schema(
+  {
+    conversationId: {
+      type: String,
+      required: true,
+      index: true, // Speeds up queries to find messages in a conversation
+    },
+    sender: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+    receiver: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+    text: {
+      type: String,
+      required: [true, 'Message cannot be empty'],
+      maxlength: [2000, 'Message cannot exceed 2000 characters'],
+    },
+    read: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+module.exports = mongoose.model('Message', messageSchema);
