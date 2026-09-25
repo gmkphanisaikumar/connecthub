@@ -4,7 +4,7 @@
   "description": "A full-stack social media app built with React, Node.js, MongoDB & Socket.IO",
   "scripts": {
     "start": "node server/server.js",
-    "build": "npm install --prefix client && npm run build --prefix client",
+    "build": "npm install --prefix server && npm install --prefix client && npm run build --prefix client",
     "dev": "concurrently --kill-others-on-fail -n SERVER,CLIENT -c cyan,magenta \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
     "server": "npm run dev --prefix server",
     "client": "npm run dev --prefix client",

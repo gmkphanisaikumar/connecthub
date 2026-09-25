@@ -53,50 +53,63 @@ app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/chat', require('./routes/chatRoutes'));
 app.use('/api/notifications', require('./routes/notificationRoutes'));
 
-// ===== Root & Health Routes =====
-// Root endpoint — Shows server status and links to frontend
-app.get('/', (req, res) => {
-  res.send(`
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>ConnectHub API Server</title>
-      <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f172a; color: #f8fafc; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
-        .card { background: #1e293b; padding: 2.5rem; border-radius: 1.5rem; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); text-align: center; max-width: 500px; width: 100%; border: 1px solid #334155; }
-        h1 { color: #818cf8; margin-bottom: 0.5rem; font-size: 2rem; }
-        p { color: #94a3b8; line-height: 1.6; font-size: 0.95rem; margin: 0 0 1rem 0; }
-        .badge { display: inline-flex; align-items: center; gap: 6px; background: #064e3b; color: #34d399; padding: 0.4rem 1rem; border-radius: 9999px; font-weight: 600; font-size: 0.85rem; margin-bottom: 1.25rem; }
-        .btn { display: inline-block; background: #6366f1; color: white; padding: 0.85rem 1.75rem; border-radius: 0.85rem; text-decoration: none; font-weight: bold; margin-top: 1.5rem; transition: all 0.2s; box-shadow: 0 10px 20px -5px rgba(99,102,241,0.4); }
-        .btn:hover { background: #4f46e5; transform: translateY(-2px); }
-        .endpoints { text-align: left; background: #0f172a; padding: 1rem 1.25rem; border-radius: 0.85rem; margin-top: 1.25rem; font-family: monospace; font-size: 0.82rem; color: #cbd5e1; border: 1px solid #334155; }
-        .endpoints div { margin: 4px 0; }
-      </style>
-    </head>
-    <body>
-      <div class="card">
-        <div class="badge"><span style="font-size: 1.2em;">●</span> Backend API Online</div>
-        <h1>ConnectHub Server</h1>
-        <p>The Node.js & Express REST API is actively running with MongoDB Atlas and Socket.IO real-time engine.</p>
-        <div class="endpoints">
-          <div>🟢 <strong>Health:</strong> <code>/api/health</code></div>
-          <div>🔐 <strong>Auth:</strong> <code>/api/auth</code></div>
-          <div>📝 <strong>Posts:</strong> <code>/api/posts</code></div>
-          <div>💬 <strong>Chat:</strong> <code>Socket.IO Connected</code></div>
-        </div>
-        <a class="btn" href="${process.env.CLIENT_URL || 'http://localhost:5173'}">Open Frontend Application →</a>
-      </div>
-    </body>
-    </html>
-  `);
-});
+const fs = require('fs');
 
 // Health check endpoint (to test if server is running)
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: '🚀 ConnectHub API is running!' });
 });
+
+// Serve frontend static build if client/dist exists
+const clientDistPath = path.join(__dirname, '../client/dist');
+if (fs.existsSync(clientDistPath)) {
+  app.use(express.static(clientDistPath));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+      return next();
+    }
+    res.sendFile(path.join(clientDistPath, 'index.html'));
+  });
+} else {
+  // Root endpoint — Shows server status and links to frontend
+  app.get('/', (req, res) => {
+    res.send(`
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>ConnectHub API Server</title>
+        <style>
+          body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f172a; color: #f8fafc; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+          .card { background: #1e293b; padding: 2.5rem; border-radius: 1.5rem; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); text-align: center; max-width: 500px; width: 100%; border: 1px solid #334155; }
+          h1 { color: #818cf8; margin-bottom: 0.5rem; font-size: 2rem; }
+          p { color: #94a3b8; line-height: 1.6; font-size: 0.95rem; margin: 0 0 1rem 0; }
+          .badge { display: inline-flex; align-items: center; gap: 6px; background: #064e3b; color: #34d399; padding: 0.4rem 1rem; border-radius: 9999px; font-weight: 600; font-size: 0.85rem; margin-bottom: 1.25rem; }
+          .btn { display: inline-block; background: #6366f1; color: white; padding: 0.85rem 1.75rem; border-radius: 0.85rem; text-decoration: none; font-weight: bold; margin-top: 1.5rem; transition: all 0.2s; box-shadow: 0 10px 20px -5px rgba(99,102,241,0.4); }
+          .btn:hover { background: #4f46e5; transform: translateY(-2px); }
+          .endpoints { text-align: left; background: #0f172a; padding: 1rem 1.25rem; border-radius: 0.85rem; margin-top: 1.25rem; font-family: monospace; font-size: 0.82rem; color: #cbd5e1; border: 1px solid #334155; }
+          .endpoints div { margin: 4px 0; }
+        </style>
+      </head>
+      <body>
+        <div class="card">
+          <div class="badge"><span style="font-size: 1.2em;">●</span> Backend API Online</div>
+          <h1>ConnectHub Server</h1>
+          <p>The Node.js & Express REST API is actively running with MongoDB Atlas and Socket.IO real-time engine.</p>
+          <div class="endpoints">
+            <div>🟢 <strong>Health:</strong> <code>/api/health</code></div>
+            <div>🔐 <strong>Auth:</strong> <code>/api/auth</code></div>
+            <div>📝 <strong>Posts:</strong> <code>/api/posts</code></div>
+            <div>💬 <strong>Chat:</strong> <code>Socket.IO Connected</code></div>
+          </div>
+          <a class="btn" href="${process.env.CLIENT_URL || 'http://localhost:5173'}">Open Frontend Application →</a>
+        </div>
+      </body>
+      </html>
+    `);
+  });
+}
 
 // Global error handler (must be AFTER all routes)
 app.use(errorHandler);
