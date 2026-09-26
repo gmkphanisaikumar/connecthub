@@ -36,12 +36,12 @@ const getUserProfile = async (req, res) => {
 
 // ==========================================
 // @route   PUT /api/users/profile
-// @desc    Update your own profile (bio, fullName, pictures)
+// @desc    Update your own profile (bio, fullName, profilePicture, coverPicture)
 // @access  Private
 // ==========================================
 const updateProfile = async (req, res) => {
   try {
-    const { fullName, bio } = req.body;
+    const { fullName, bio, removeCover } = req.body;
     const user = await User.findById(req.user._id);
 
     if (!user) {
@@ -52,23 +52,40 @@ const updateProfile = async (req, res) => {
     if (fullName !== undefined) user.fullName = fullName;
     if (bio !== undefined) user.bio = bio;
 
-    // Update profile picture if uploaded
-    if (req.file) {
-      user.profilePicture = `/uploads/${req.file.filename}`;
+    // Handle uploaded files (multer fields or single file)
+    if (req.files) {
+      if (req.files.profilePicture && req.files.profilePicture[0]) {
+        user.profilePicture = `/uploads/${req.files.profilePicture[0].filename}`;
+      }
+      if (req.files.coverPicture && req.files.coverPicture[0]) {
+        user.coverPicture = `/uploads/${req.files.coverPicture[0].filename}`;
+      }
+    } else if (req.file) {
+      if (req.file.fieldname === 'coverPicture') {
+        user.coverPicture = `/uploads/${req.file.filename}`;
+      } else {
+        user.profilePicture = `/uploads/${req.file.filename}`;
+      }
+    }
+
+    // Remove cover image if explicitly requested
+    if (removeCover === 'true' || removeCover === true) {
+      user.coverPicture = '';
     }
 
     await user.save();
 
     res.status(200).json({
       success: true,
-      message: 'Profile updated!',
+      message: 'Profile updated successfully!',
       user,
     });
   } catch (error) {
     console.error('Update Profile Error:', error);
-    res.status(500).json({ success: false, message: 'Server error' });
+    res.status(500).json({ success: false, message: error.message || 'Server error' });
   }
 };
+
 
 // ==========================================
 // @route   PUT /api/users/follow/:id

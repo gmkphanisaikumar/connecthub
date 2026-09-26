@@ -56,6 +56,8 @@ const register = async (req, res) => {
         email: user.email,
         fullName: user.fullName,
         profilePicture: user.profilePicture,
+        coverPicture: user.coverPicture || '',
+        bio: user.bio || '',
         followers: user.followers,
         following: user.following,
         savedPosts: user.savedPosts || [],
@@ -129,12 +131,14 @@ const login = async (req, res) => {
         email: user.email,
         fullName: user.fullName,
         profilePicture: user.profilePicture,
+        coverPicture: user.coverPicture || '',
         bio: user.bio,
         followers: user.followers,
         following: user.following,
         savedPosts: user.savedPosts || [],
       },
     });
+
   } catch (error) {
     console.error('Login Error:', error);
     res.status(500).json({

@@ -20,7 +20,14 @@ router.get('/suggestions', getSuggestions);
 
 // Profile routes
 router.get('/profile/:username', getUserProfile);
-router.put('/profile', upload.single('profilePicture'), updateProfile);
+router.put(
+  '/profile',
+  upload.fields([
+    { name: 'profilePicture', maxCount: 1 },
+    { name: 'coverPicture', maxCount: 1 },
+  ]),
+  updateProfile
+);
 
 // Follow/Unfollow
 router.put('/follow/:id', toggleFollow);

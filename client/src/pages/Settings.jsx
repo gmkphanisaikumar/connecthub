@@ -34,6 +34,9 @@ const Settings = () => {
   });
   const [avatarFile, setAvatarFile] = useState(null);
   const [avatarPreview, setAvatarPreview] = useState(null);
+  const [coverFile, setCoverFile] = useState(null);
+  const [coverPreview, setCoverPreview] = useState(null);
+  const [removeCover, setRemoveCover] = useState(false);
   const [profileLoading, setProfileLoading] = useState(false);
 
   // Sync profileForm when user loads
@@ -88,6 +91,12 @@ const Settings = () => {
       if (avatarFile) {
         formData.append('profilePicture', avatarFile);
       }
+      if (coverFile) {
+        formData.append('coverPicture', coverFile);
+      }
+      if (removeCover) {
+        formData.append('removeCover', 'true');
+      }
 
       const res = await api.put('/users/profile', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
@@ -98,7 +107,10 @@ const Settings = () => {
       localStorage.setItem('user', JSON.stringify(updatedUser));
       setAvatarFile(null);
       setAvatarPreview(null);
-      toast.success('Profile & picture updated successfully! ✨');
+      setCoverFile(null);
+      setCoverPreview(null);
+      setRemoveCover(false);
+      toast.success('Profile & media updated successfully! ✨');
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to update profile');
     } finally {
@@ -141,11 +153,11 @@ const Settings = () => {
             Settings & Profile
           </h2>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Manage your account settings, avatar, preferences, and security.
+            Manage your account settings, avatar, cover background, preferences, and security.
           </p>
         </div>
 
-        {/* ===== Profile & Avatar Card ===== */}
+        {/* ===== Profile & Media Card ===== */}
         <div className="card border border-gray-100 dark:border-gray-800 shadow-sm rounded-3xl p-6">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-cyan-100 dark:bg-cyan-950/50 text-cyan-600 dark:text-cyan-400 rounded-xl flex items-center justify-center">
@@ -153,16 +165,81 @@ const Settings = () => {
             </div>
             <div>
               <h3 className="font-bold text-gray-900 dark:text-white text-base">
-                Profile & Avatar
+                Profile & Background Media
               </h3>
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                Update your public photo, name, and bio
+                Update your public avatar, profile cover background, name, and bio
               </p>
             </div>
           </div>
 
           <form onSubmit={handleProfileSubmit} className="space-y-5">
-            {/* Avatar Preview & Upload */}
+            {/* 1. Cover Background Preview & Upload */}
+            <div className="p-4 bg-gray-50/80 dark:bg-gray-800/40 rounded-2xl border border-gray-100 dark:border-gray-800">
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300">
+                  Profile Cover Background
+                </label>
+                {(coverPreview || (user?.coverPicture && !removeCover)) && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCoverFile(null);
+                      setCoverPreview(null);
+                      setRemoveCover(true);
+                    }}
+                    className="text-xs text-red-500 hover:text-red-600 font-semibold"
+                  >
+                    Remove Cover
+                  </button>
+                )}
+              </div>
+
+              <div className="h-28 w-full rounded-xl overflow-hidden mb-3 border border-gray-200 dark:border-gray-700 bg-gray-950 flex items-center justify-center relative">
+                {coverPreview ? (
+                  <img
+                    src={coverPreview}
+                    alt="New Cover Preview"
+                    className="w-full h-full object-cover"
+                  />
+                ) : user?.coverPicture && !removeCover ? (
+                  <img
+                    src={getImageUrl(user.coverPicture)}
+                    alt="Current Cover"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-r from-blue-900 via-cyan-800 to-teal-800 flex items-center justify-center text-xs text-cyan-200 font-medium">
+                    Default Gradient (No custom cover image)
+                  </div>
+                )}
+              </div>
+
+              <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 text-teal-600 dark:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-950/40 rounded-xl text-xs font-bold border border-gray-200 dark:border-gray-700 shadow-xs transition-colors">
+                <HiOutlinePhotograph className="text-base" />
+                <span>{coverPreview ? 'Change Cover Photo' : 'Upload Cover Image'}</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                      if (file.size > 10 * 1024 * 1024) {
+                        toast.error('Cover must be less than 10MB');
+                        return;
+                      }
+                      setCoverFile(file);
+                      setCoverPreview(URL.createObjectURL(file));
+                      setRemoveCover(false);
+                      toast.success('Cover image chosen!');
+                    }
+                  }}
+                />
+              </label>
+            </div>
+
+            {/* 2. Avatar Preview & Upload */}
             <div className="flex flex-col sm:flex-row items-center gap-5 p-4 bg-gray-50/80 dark:bg-gray-800/40 rounded-2xl border border-gray-100 dark:border-gray-800">
               <div className="w-20 h-20 bg-gradient-to-br from-teal-400 via-cyan-500 to-emerald-400 rounded-full flex items-center justify-center overflow-hidden shadow-md ring-4 ring-white dark:ring-gray-800 shrink-0">
                 {avatarPreview ? (
@@ -187,7 +264,7 @@ const Settings = () => {
               <div className="flex-1 text-center sm:text-left">
                 <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 text-cyan-600 dark:text-cyan-400 hover:bg-cyan-50 dark:hover:bg-cyan-950/40 rounded-xl text-xs font-bold border border-gray-200 dark:border-gray-700 shadow-xs transition-colors">
                   <HiOutlinePhotograph className="text-base" />
-                  <span>{avatarPreview ? 'Change Selected Photo' : 'Upload New Photo'}</span>
+                  <span>{avatarPreview ? 'Change Selected Photo' : 'Upload Avatar Photo'}</span>
                   <input
                     type="file"
                     accept="image/*"
@@ -201,7 +278,7 @@ const Settings = () => {
                         }
                         setAvatarFile(file);
                         setAvatarPreview(URL.createObjectURL(file));
-                        toast.success('Photo chosen! Click Save Profile to apply.');
+                        toast.success('Avatar chosen!');
                       }
                     }}
                   />
@@ -256,12 +333,13 @@ const Settings = () => {
               ) : (
                 <>
                   <HiOutlineCheck className="text-base" />
-                  <span>Save Profile & Photo</span>
+                  <span>Save Profile & Media</span>
                 </>
               )}
             </button>
           </form>
         </div>
+
 
         {/* ===== Appearance ===== */}
         <div className="card">

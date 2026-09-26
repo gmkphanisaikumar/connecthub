@@ -29,6 +29,9 @@ const Profile = () => {
   const [editForm, setEditForm] = useState({ fullName: '', bio: '' });
   const [editImage, setEditImage] = useState(null);
   const [editPreview, setEditPreview] = useState(null);
+  const [editCover, setEditCover] = useState(null);
+  const [editCoverPreview, setEditCoverPreview] = useState(null);
+  const [removeCover, setRemoveCover] = useState(false);
   const [editLoading, setEditLoading] = useState(false);
 
   const isOwnProfile = currentUser?.username === username;
@@ -43,7 +46,7 @@ const Profile = () => {
         setPosts(res.data.posts);
 
         // Check if we're following this user
-        const isFollow = res.data.user.followers.some(
+        const isFollow = res.data.user.followers?.some(
           (f) => (f._id || f) === currentUser?._id
         );
         setIsFollowing(isFollow);
@@ -87,6 +90,35 @@ const Profile = () => {
     }
   };
 
+  // Direct cover file change from banner
+  const handleDirectCoverChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('Cover image must be less than 10MB');
+      return;
+    }
+
+    const toastId = toast.loading('Uploading cover background...');
+    try {
+      const formData = new FormData();
+      formData.append('coverPicture', file);
+
+      const res = await api.put('/users/profile', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+
+      const updatedUser = res.data.user;
+      setProfileUser(updatedUser);
+      setCurrentUser(updatedUser);
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      toast.success('Cover image updated! 🌅', { id: toastId });
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to upload cover image', { id: toastId });
+    }
+  };
+
   // Update profile
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
@@ -97,6 +129,12 @@ const Profile = () => {
       formData.append('bio', editForm.bio.trim());
       if (editImage) {
         formData.append('profilePicture', editImage);
+      }
+      if (editCover) {
+        formData.append('coverPicture', editCover);
+      }
+      if (removeCover) {
+        formData.append('removeCover', 'true');
       }
 
       const res = await api.put('/users/profile', formData, {
@@ -110,9 +148,12 @@ const Profile = () => {
       setShowEditModal(false);
       setEditImage(null);
       setEditPreview(null);
-      toast.success('Profile & photo updated successfully! ✨');
+      setEditCover(null);
+      setEditCoverPreview(null);
+      setRemoveCover(false);
+      toast.success('Profile updated successfully! ✨');
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to update profile picture');
+      toast.error(error.response?.data?.message || 'Failed to update profile');
     } finally {
       setEditLoading(false);
     }
@@ -142,7 +183,7 @@ const Profile = () => {
       <Layout>
         <div className="max-w-2xl mx-auto">
           <div className="card animate-pulse">
-            <div className="h-40 bg-gray-200 dark:bg-gray-700 rounded-xl mb-4" />
+            <div className="h-48 bg-gray-200 dark:bg-gray-700 rounded-xl mb-4" />
             <div className="flex items-end gap-4 -mt-16 ml-6 mb-4">
               <div className="w-24 h-24 bg-gray-300 dark:bg-gray-600 rounded-full border-4 border-white dark:border-gray-900" />
               <div className="mb-2">
@@ -179,19 +220,50 @@ const Profile = () => {
     <Layout>
       <div className="max-w-2xl mx-auto">
         {/* ===== Profile Header Card ===== */}
-        <div className="card mb-6 p-0 overflow-hidden border border-gray-100 dark:border-gray-800 shadow-sm rounded-3xl">
-          {/* Cover Photo */}
-          <div className="h-44 bg-gradient-to-br from-blue-900 via-cyan-800 to-teal-800 relative">
-            <div className="absolute inset-0 bg-black/10" />
-            {/* Decorative pattern */}
-            <div className="absolute top-6 right-8 w-32 h-32 bg-cyan-400/15 rounded-full blur-2xl" />
-            <div className="absolute bottom-4 left-12 w-48 h-48 bg-teal-300/15 rounded-full blur-3xl" />
+        <div className="card mb-6 p-0 overflow-hidden border border-gray-100 dark:border-gray-800 shadow-sm rounded-3xl relative">
+          {/* Cover Photo / Background Area */}
+          <div className="h-48 sm:h-56 w-full relative overflow-hidden bg-gradient-to-br from-blue-950 via-cyan-900 to-teal-900">
+            {profileUser.coverPicture ? (
+              <img
+                src={getImageUrl(profileUser.coverPicture)}
+                alt={`${profileUser.username}'s Cover`}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full relative">
+                {/* Decorative gradients if no cover photo */}
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-900/90 via-cyan-800/90 to-teal-800/90" />
+                <div className="absolute top-6 right-8 w-40 h-40 bg-cyan-400/20 rounded-full blur-2xl" />
+                <div className="absolute bottom-4 left-12 w-48 h-48 bg-teal-300/20 rounded-full blur-3xl" />
+              </div>
+            )}
+
+            {/* Dark overlay for readability */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/20 pointer-events-none" />
+
+            {/* Banner Quick Cover Change Button (Owner only) */}
+            {isOwnProfile && (
+              <div className="absolute top-3.5 right-3.5 z-10">
+                <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 bg-black/50 hover:bg-black/75 active:bg-black/90 backdrop-blur-md text-white rounded-xl text-xs font-semibold border border-white/20 shadow-lg transition-all">
+                  <HiOutlinePhotograph className="text-base text-cyan-300" />
+                  <span className="hidden sm:inline">
+                    {profileUser.coverPicture ? 'Change Cover' : 'Add Cover Photo'}
+                  </span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleDirectCoverChange}
+                  />
+                </label>
+              </div>
+            )}
           </div>
 
           {/* Profile Info */}
           <div className="px-6 pb-6">
             {/* Avatar + Actions row */}
-            <div className="flex items-end justify-between -mt-14 mb-4">
+            <div className="flex items-end justify-between -mt-14 mb-4 relative z-10">
               <div className="w-28 h-28 bg-gradient-to-br from-teal-400 via-cyan-500 to-emerald-400 rounded-full border-4 border-white dark:border-gray-900 flex items-center justify-center shadow-xl shadow-cyan-500/20 overflow-hidden ring-2 ring-cyan-400/30 shrink-0">
                 {profileUser.profilePicture ? (
                   <img
@@ -343,38 +415,102 @@ const Profile = () => {
 
         {/* ===== Edit Profile Modal ===== */}
         {showEditModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
             {/* Backdrop */}
             <div
-              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm"
               onClick={() => setShowEditModal(false)}
             />
 
             {/* Modal */}
-            <div className="relative bg-white dark:bg-gray-900 rounded-3xl shadow-2xl w-full max-w-md p-6 sm:p-7 border border-gray-200 dark:border-gray-800 animate-in fade-in zoom-in-95 duration-200">
+            <div className="relative bg-white dark:bg-gray-900 rounded-3xl shadow-2xl w-full max-w-lg p-6 sm:p-7 border border-gray-200 dark:border-gray-800 my-8 animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
               <h3 className="text-xl font-extrabold text-gray-900 dark:text-white mb-5">
-                Edit Profile & Avatar
+                Edit Profile & Media
               </h3>
 
-              <form onSubmit={handleUpdateProfile} className="space-y-4">
-                {/* Profile Picture Upload */}
+              <form onSubmit={handleUpdateProfile} className="space-y-5">
+                {/* 1. Cover / Background Image Upload */}
+                <div className="p-4 bg-gray-50/80 dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-800">
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300">
+                      Cover Background Image
+                    </label>
+                    {(editCoverPreview || (profileUser.coverPicture && !removeCover)) && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditCover(null);
+                          setEditCoverPreview(null);
+                          setRemoveCover(true);
+                        }}
+                        className="text-xs text-red-500 hover:text-red-600 font-semibold"
+                      >
+                        Remove Cover
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="h-28 w-full rounded-xl overflow-hidden mb-3 border border-gray-200 dark:border-gray-700 bg-gray-950 flex items-center justify-center relative">
+                    {editCoverPreview ? (
+                      <img
+                        src={editCoverPreview}
+                        alt="New Cover Preview"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : profileUser.coverPicture && !removeCover ? (
+                      <img
+                        src={getImageUrl(profileUser.coverPicture)}
+                        alt="Current Cover"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-r from-blue-900 via-cyan-800 to-teal-800 flex items-center justify-center text-xs text-cyan-200 font-medium">
+                        Default Gradient (No image uploaded)
+                      </div>
+                    )}
+                  </div>
+
+                  <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 text-teal-600 dark:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-950/40 rounded-xl text-xs font-bold border border-gray-200 dark:border-gray-700 shadow-xs transition-colors">
+                    <HiOutlinePhotograph className="text-base" />
+                    <span>{editCoverPreview ? 'Change Cover File' : 'Upload Cover Image'}</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                          if (file.size > 10 * 1024 * 1024) {
+                            toast.error('Cover must be less than 10MB');
+                            return;
+                          }
+                          setEditCover(file);
+                          setEditCoverPreview(URL.createObjectURL(file));
+                          setRemoveCover(false);
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
+
+                {/* 2. Profile Picture Upload */}
                 <div className="flex flex-col items-center p-4 bg-gray-50/80 dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-800">
                   <div className="relative mb-3">
-                    <div className="w-24 h-24 bg-gradient-to-br from-teal-400 via-cyan-500 to-emerald-400 rounded-full flex items-center justify-center overflow-hidden shadow-lg ring-4 ring-white dark:ring-gray-800">
+                    <div className="w-20 h-20 bg-gradient-to-br from-teal-400 via-cyan-500 to-emerald-400 rounded-full flex items-center justify-center overflow-hidden shadow-lg ring-4 ring-white dark:ring-gray-800">
                       {editPreview ? (
                         <img
                           src={editPreview}
                           alt="New Avatar Preview"
-                          className="w-24 h-24 rounded-full object-cover"
+                          className="w-20 h-20 rounded-full object-cover"
                         />
                       ) : profileUser.profilePicture ? (
                         <img
                           src={getImageUrl(profileUser.profilePicture)}
                           alt="Profile Avatar"
-                          className="w-24 h-24 rounded-full object-cover"
+                          className="w-20 h-20 rounded-full object-cover"
                         />
                       ) : (
-                        <span className="text-white font-bold text-3xl">
+                        <span className="text-white font-bold text-2xl">
                           {(profileUser.username?.[0] || 'U').toUpperCase()}
                         </span>
                       )}
@@ -384,7 +520,7 @@ const Profile = () => {
                   {/* Direct Select File Button */}
                   <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 text-cyan-600 dark:text-cyan-400 hover:bg-cyan-50 dark:hover:bg-cyan-950/40 rounded-xl text-xs font-bold border border-gray-200 dark:border-gray-700 shadow-xs transition-colors">
                     <HiOutlinePhotograph className="text-base" />
-                    <span>{editPreview ? 'Change Selected Photo' : 'Upload New Photo'}</span>
+                    <span>{editPreview ? 'Change Selected Photo' : 'Upload Avatar Photo'}</span>
                     <input
                       type="file"
                       accept="image/*"
@@ -398,14 +534,11 @@ const Profile = () => {
                           }
                           setEditImage(file);
                           setEditPreview(URL.createObjectURL(file));
-                          toast.success('Photo selected! Click Save Changes to apply.');
+                          toast.success('Avatar selected!');
                         }
                       }}
                     />
                   </label>
-                  <p className="text-[11px] text-gray-400 mt-2">
-                    Supports JPG, PNG, GIF, WebP (Max 10MB)
-                  </p>
                 </div>
 
                 {/* Full Name */}
@@ -453,6 +586,9 @@ const Profile = () => {
                       setShowEditModal(false);
                       setEditImage(null);
                       setEditPreview(null);
+                      setEditCover(null);
+                      setEditCoverPreview(null);
+                      setRemoveCover(false);
                     }}
                     className="btn-secondary flex-1 py-2.5 text-sm font-semibold"
                   >
@@ -486,4 +622,5 @@ const Profile = () => {
 };
 
 export default Profile;
+
 
