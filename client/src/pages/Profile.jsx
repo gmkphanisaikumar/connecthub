@@ -93,8 +93,8 @@ const Profile = () => {
     setEditLoading(true);
     try {
       const formData = new FormData();
-      formData.append('fullName', editForm.fullName);
-      formData.append('bio', editForm.bio);
+      formData.append('fullName', editForm.fullName.trim());
+      formData.append('bio', editForm.bio.trim());
       if (editImage) {
         formData.append('profilePicture', editImage);
       }
@@ -103,15 +103,16 @@ const Profile = () => {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
-      setProfileUser(res.data.user);
-      setCurrentUser(res.data.user); // Update global auth state too
-      localStorage.setItem('user', JSON.stringify(res.data.user));
+      const updatedUser = res.data.user;
+      setProfileUser(updatedUser);
+      setCurrentUser(updatedUser); // Update global auth state too
+      localStorage.setItem('user', JSON.stringify(updatedUser));
       setShowEditModal(false);
       setEditImage(null);
       setEditPreview(null);
-      toast.success('Profile updated! ✨');
-    } catch {
-      toast.error('Failed to update profile');
+      toast.success('Profile & photo updated successfully! ✨');
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to update profile picture');
     } finally {
       setEditLoading(false);
     }
@@ -178,20 +179,20 @@ const Profile = () => {
     <Layout>
       <div className="max-w-2xl mx-auto">
         {/* ===== Profile Header Card ===== */}
-        <div className="card mb-6 p-0 overflow-hidden">
+        <div className="card mb-6 p-0 overflow-hidden border border-gray-100 dark:border-gray-800 shadow-sm rounded-3xl">
           {/* Cover Photo */}
-          <div className="h-44 bg-gradient-to-br from-teal-600 via-cyan-600 to-emerald-500 relative">
+          <div className="h-44 bg-gradient-to-br from-blue-900 via-cyan-800 to-teal-800 relative">
             <div className="absolute inset-0 bg-black/10" />
             {/* Decorative pattern */}
-            <div className="absolute top-6 right-8 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
-            <div className="absolute bottom-4 left-12 w-48 h-48 bg-cyan-300/15 rounded-full blur-3xl" />
+            <div className="absolute top-6 right-8 w-32 h-32 bg-cyan-400/15 rounded-full blur-2xl" />
+            <div className="absolute bottom-4 left-12 w-48 h-48 bg-teal-300/15 rounded-full blur-3xl" />
           </div>
 
           {/* Profile Info */}
           <div className="px-6 pb-6">
             {/* Avatar + Actions row */}
             <div className="flex items-end justify-between -mt-14 mb-4">
-              <div className="w-28 h-28 bg-gradient-to-br from-teal-400 via-cyan-500 to-emerald-400 rounded-full border-4 border-white dark:border-gray-900 flex items-center justify-center shadow-xl shadow-teal-500/20">
+              <div className="w-28 h-28 bg-gradient-to-br from-teal-400 via-cyan-500 to-emerald-400 rounded-full border-4 border-white dark:border-gray-900 flex items-center justify-center shadow-xl shadow-cyan-500/20 overflow-hidden ring-2 ring-cyan-400/30 shrink-0">
                 {profileUser.profilePicture ? (
                   <img
                     src={getImageUrl(profileUser.profilePicture)}
@@ -210,9 +211,9 @@ const Profile = () => {
                 {isOwnProfile ? (
                   <button
                     onClick={() => setShowEditModal(true)}
-                    className="btn-secondary flex items-center gap-2 text-sm"
+                    className="btn-secondary flex items-center gap-2 text-sm font-semibold shadow-xs"
                   >
-                    <HiOutlinePencil className="text-lg" />
+                    <HiOutlinePencil className="text-lg text-cyan-600 dark:text-cyan-400" />
                     Edit Profile
                   </button>
                 ) : (
@@ -345,28 +346,31 @@ const Profile = () => {
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             {/* Backdrop */}
             <div
-              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
               onClick={() => setShowEditModal(false)}
             />
 
             {/* Modal */}
-            <div className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md p-6 border border-gray-200 dark:border-gray-800">
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
-                Edit Profile
+            <div className="relative bg-white dark:bg-gray-900 rounded-3xl shadow-2xl w-full max-w-md p-6 sm:p-7 border border-gray-200 dark:border-gray-800 animate-in fade-in zoom-in-95 duration-200">
+              <h3 className="text-xl font-extrabold text-gray-900 dark:text-white mb-5">
+                Edit Profile & Avatar
               </h3>
 
               <form onSubmit={handleUpdateProfile} className="space-y-4">
                 {/* Profile Picture Upload */}
-                <div className="flex flex-col items-center mb-4">
-                  <div className="relative group">
-                    <div className="w-24 h-24 bg-gradient-to-br from-teal-400 via-cyan-500 to-emerald-400 rounded-full flex items-center justify-center overflow-hidden shadow-md">
-                      {editPreview || profileUser.profilePicture ? (
+                <div className="flex flex-col items-center p-4 bg-gray-50/80 dark:bg-gray-800/50 rounded-2xl border border-gray-100 dark:border-gray-800">
+                  <div className="relative mb-3">
+                    <div className="w-24 h-24 bg-gradient-to-br from-teal-400 via-cyan-500 to-emerald-400 rounded-full flex items-center justify-center overflow-hidden shadow-lg ring-4 ring-white dark:ring-gray-800">
+                      {editPreview ? (
                         <img
-                          src={
-                            editPreview ||
-                            getImageUrl(profileUser.profilePicture)
-                          }
-                          alt="Preview"
+                          src={editPreview}
+                          alt="New Avatar Preview"
+                          className="w-24 h-24 rounded-full object-cover"
+                        />
+                      ) : profileUser.profilePicture ? (
+                        <img
+                          src={getImageUrl(profileUser.profilePicture)}
+                          alt="Profile Avatar"
                           className="w-24 h-24 rounded-full object-cover"
                         />
                       ) : (
@@ -375,30 +379,38 @@ const Profile = () => {
                         </span>
                       )}
                     </div>
-                    <label className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity">
-                      <HiOutlinePhotograph className="text-white text-2xl" />
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={(e) => {
-                          const file = e.target.files[0];
-                          if (file) {
-                            setEditImage(file);
-                            setEditPreview(URL.createObjectURL(file));
-                          }
-                        }}
-                      />
-                    </label>
                   </div>
-                  <p className="text-xs text-gray-400 mt-2">
-                    Hover to change photo
+
+                  {/* Direct Select File Button */}
+                  <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 text-cyan-600 dark:text-cyan-400 hover:bg-cyan-50 dark:hover:bg-cyan-950/40 rounded-xl text-xs font-bold border border-gray-200 dark:border-gray-700 shadow-xs transition-colors">
+                    <HiOutlinePhotograph className="text-base" />
+                    <span>{editPreview ? 'Change Selected Photo' : 'Upload New Photo'}</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                          if (file.size > 10 * 1024 * 1024) {
+                            toast.error('Image must be less than 10MB');
+                            return;
+                          }
+                          setEditImage(file);
+                          setEditPreview(URL.createObjectURL(file));
+                          toast.success('Photo selected! Click Save Changes to apply.');
+                        }
+                      }}
+                    />
+                  </label>
+                  <p className="text-[11px] text-gray-400 mt-2">
+                    Supports JPG, PNG, GIF, WebP (Max 10MB)
                   </p>
                 </div>
 
                 {/* Full Name */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">
                     Full Name
                   </label>
                   <input
@@ -407,7 +419,7 @@ const Profile = () => {
                     onChange={(e) =>
                       setEditForm({ ...editForm, fullName: e.target.value })
                     }
-                    className="input-field"
+                    className="input-field text-sm"
                     maxLength={50}
                     placeholder="Your full name"
                   />
@@ -415,15 +427,15 @@ const Profile = () => {
 
                 {/* Bio */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                    Bio
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">
+                    Bio / Status
                   </label>
                   <textarea
                     value={editForm.bio}
                     onChange={(e) =>
                       setEditForm({ ...editForm, bio: e.target.value })
                     }
-                    className="input-field"
+                    className="input-field text-sm"
                     rows={3}
                     maxLength={200}
                     placeholder="Tell people about yourself..."
@@ -442,14 +454,14 @@ const Profile = () => {
                       setEditImage(null);
                       setEditPreview(null);
                     }}
-                    className="btn-secondary flex-1"
+                    className="btn-secondary flex-1 py-2.5 text-sm font-semibold"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={editLoading}
-                    className="btn-primary flex-1 flex items-center justify-center gap-2"
+                    className="btn-primary flex-1 py-2.5 text-sm font-semibold flex items-center justify-center gap-2 shadow-md"
                   >
                     {editLoading ? (
                       <>
@@ -474,3 +486,4 @@ const Profile = () => {
 };
 
 export default Profile;
+

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Layout from '../components/layout/Layout';
-import api from '../utils/api';
+import api, { getImageUrl } from '../utils/api';
 import toast from 'react-hot-toast';
 import {
   HiOutlineMoon,
@@ -12,10 +12,12 @@ import {
   HiOutlineLogout,
   HiOutlineShieldCheck,
   HiOutlineBell,
+  HiOutlinePhotograph,
+  HiOutlineCheck,
 } from 'react-icons/hi';
 
 const Settings = () => {
-  const { user, logout } = useAuth();
+  const { user, setUser, logout } = useAuth();
   const navigate = useNavigate();
 
   // Dark mode state — read from localStorage or system preference
@@ -24,6 +26,25 @@ const Settings = () => {
     if (saved !== null) return saved === 'true';
     return window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
+
+  // Profile Edit State
+  const [profileForm, setProfileForm] = useState({
+    fullName: user?.fullName || '',
+    bio: user?.bio || '',
+  });
+  const [avatarFile, setAvatarFile] = useState(null);
+  const [avatarPreview, setAvatarPreview] = useState(null);
+  const [profileLoading, setProfileLoading] = useState(false);
+
+  // Sync profileForm when user loads
+  useEffect(() => {
+    if (user) {
+      setProfileForm({
+        fullName: user.fullName || '',
+        bio: user.bio || '',
+      });
+    }
+  }, [user]);
 
   // Password change state
   const [passwordForm, setPasswordForm] = useState({
@@ -56,6 +77,35 @@ const Settings = () => {
     toast.success('Logged out successfully');
   };
 
+  // Update Profile & Avatar Handler
+  const handleProfileSubmit = async (e) => {
+    e.preventDefault();
+    setProfileLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append('fullName', profileForm.fullName.trim());
+      formData.append('bio', profileForm.bio.trim());
+      if (avatarFile) {
+        formData.append('profilePicture', avatarFile);
+      }
+
+      const res = await api.put('/users/profile', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+
+      const updatedUser = res.data.user;
+      setUser(updatedUser);
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      setAvatarFile(null);
+      setAvatarPreview(null);
+      toast.success('Profile & picture updated successfully! ✨');
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to update profile');
+    } finally {
+      setProfileLoading(false);
+    }
+  };
+
   const handlePasswordChange = async (e) => {
     e.preventDefault();
 
@@ -70,7 +120,6 @@ const Settings = () => {
 
     setPasswordLoading(true);
     try {
-      // We will add this endpoint in a future step
       await api.put('/users/password', {
         currentPassword: passwordForm.currentPassword,
         newPassword: passwordForm.newPassword,
@@ -87,9 +136,132 @@ const Settings = () => {
   return (
     <Layout>
       <div className="max-w-2xl mx-auto space-y-6">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-          Settings
-        </h2>
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+            Settings & Profile
+          </h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            Manage your account settings, avatar, preferences, and security.
+          </p>
+        </div>
+
+        {/* ===== Profile & Avatar Card ===== */}
+        <div className="card border border-gray-100 dark:border-gray-800 shadow-sm rounded-3xl p-6">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 bg-cyan-100 dark:bg-cyan-950/50 text-cyan-600 dark:text-cyan-400 rounded-xl flex items-center justify-center">
+              <HiOutlineUser className="text-xl" />
+            </div>
+            <div>
+              <h3 className="font-bold text-gray-900 dark:text-white text-base">
+                Profile & Avatar
+              </h3>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                Update your public photo, name, and bio
+              </p>
+            </div>
+          </div>
+
+          <form onSubmit={handleProfileSubmit} className="space-y-5">
+            {/* Avatar Preview & Upload */}
+            <div className="flex flex-col sm:flex-row items-center gap-5 p-4 bg-gray-50/80 dark:bg-gray-800/40 rounded-2xl border border-gray-100 dark:border-gray-800">
+              <div className="w-20 h-20 bg-gradient-to-br from-teal-400 via-cyan-500 to-emerald-400 rounded-full flex items-center justify-center overflow-hidden shadow-md ring-4 ring-white dark:ring-gray-800 shrink-0">
+                {avatarPreview ? (
+                  <img
+                    src={avatarPreview}
+                    alt="New Avatar"
+                    className="w-20 h-20 rounded-full object-cover"
+                  />
+                ) : user?.profilePicture ? (
+                  <img
+                    src={getImageUrl(user.profilePicture)}
+                    alt="Current Avatar"
+                    className="w-20 h-20 rounded-full object-cover"
+                  />
+                ) : (
+                  <span className="text-white font-bold text-2xl">
+                    {(user?.username?.[0] || 'U').toUpperCase()}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex-1 text-center sm:text-left">
+                <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 text-cyan-600 dark:text-cyan-400 hover:bg-cyan-50 dark:hover:bg-cyan-950/40 rounded-xl text-xs font-bold border border-gray-200 dark:border-gray-700 shadow-xs transition-colors">
+                  <HiOutlinePhotograph className="text-base" />
+                  <span>{avatarPreview ? 'Change Selected Photo' : 'Upload New Photo'}</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        if (file.size > 10 * 1024 * 1024) {
+                          toast.error('Image must be less than 10MB');
+                          return;
+                        }
+                        setAvatarFile(file);
+                        setAvatarPreview(URL.createObjectURL(file));
+                        toast.success('Photo chosen! Click Save Profile to apply.');
+                      }
+                    }}
+                  />
+                </label>
+                <p className="text-[11px] text-gray-400 mt-1.5">
+                  JPG, PNG, GIF, WebP up to 10MB
+                </p>
+              </div>
+            </div>
+
+            {/* Full Name */}
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">
+                Full Name
+              </label>
+              <input
+                type="text"
+                value={profileForm.fullName}
+                onChange={(e) =>
+                  setProfileForm({ ...profileForm, fullName: e.target.value })
+                }
+                className="input-field text-sm"
+                placeholder="Enter your full name"
+                maxLength={50}
+              />
+            </div>
+
+            {/* Bio */}
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">
+                Bio / Headline
+              </label>
+              <textarea
+                value={profileForm.bio}
+                onChange={(e) =>
+                  setProfileForm({ ...profileForm, bio: e.target.value })
+                }
+                className="input-field text-sm"
+                rows={2}
+                placeholder="A short bio about yourself..."
+                maxLength={200}
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={profileLoading}
+              className="btn-primary text-xs sm:text-sm px-6 py-2.5 font-semibold flex items-center gap-2 shadow-md"
+            >
+              {profileLoading ? (
+                <span>Saving Profile...</span>
+              ) : (
+                <>
+                  <HiOutlineCheck className="text-base" />
+                  <span>Save Profile & Photo</span>
+                </>
+              )}
+            </button>
+          </form>
+        </div>
 
         {/* ===== Appearance ===== */}
         <div className="card">
@@ -146,41 +318,6 @@ const Settings = () => {
                 )}
               </div>
             </button>
-          </div>
-        </div>
-
-        {/* ===== Account Info ===== */}
-        <div className="card">
-          <div className="flex items-center gap-3 mb-5">
-            <div className="w-9 h-9 bg-primary-100 dark:bg-primary-900/30 rounded-xl flex items-center justify-center">
-              <HiOutlineUser className="text-primary-600 dark:text-primary-400 text-xl" />
-            </div>
-            <div>
-              <h3 className="font-bold text-gray-900 dark:text-white">Account</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Your account information
-              </p>
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            {[
-              { label: 'Username', value: `@${user?.username}` },
-              { label: 'Email', value: user?.email },
-              { label: 'Full Name', value: user?.fullName || '—' },
-            ].map((item) => (
-              <div
-                key={item.label}
-                className="flex items-center justify-between py-3 border-b border-gray-100 dark:border-gray-800 last:border-0"
-              >
-                <span className="text-sm text-gray-500 dark:text-gray-400">
-                  {item.label}
-                </span>
-                <span className="text-sm font-medium text-gray-900 dark:text-white">
-                  {item.value}
-                </span>
-              </div>
-            ))}
           </div>
         </div>
 
@@ -315,3 +452,4 @@ const Settings = () => {
 };
 
 export default Settings;
+

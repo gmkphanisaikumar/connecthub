@@ -3,13 +3,25 @@
 const errorHandler = (err, req, res, next) => {
   // Log the error (only show full stack in development)
   if (process.env.NODE_ENV === 'development') {
-    console.error('🔴 Error:', err.stack);
+    console.error('🔴 Error:', err.stack || err.message);
   } else {
     console.error('🔴 Error:', err.message);
   }
 
   let statusCode = err.statusCode || 500;
   let message = err.message || 'Internal Server Error';
+
+  // Handle Multer errors (file size, format, limits)
+  if (err.name === 'MulterError') {
+    statusCode = 400;
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      message = 'Image size exceeds maximum 10MB limit. Please upload a smaller image.';
+    } else if (err.code === 'LIMIT_UNEXPECTED_FILE') {
+      message = 'Unexpected file field in upload request.';
+    } else {
+      message = err.message || 'File upload error';
+    }
+  }
 
   // Handle specific Mongoose/MongoDB errors with friendly messages
   if (err.name === 'ValidationError') {
@@ -47,3 +59,4 @@ const errorHandler = (err, req, res, next) => {
 };
 
 module.exports = errorHandler;
+
