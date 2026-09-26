@@ -41,6 +41,12 @@ const postSchema = new mongoose.Schema(
         },
       },
     ],
+    shares: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    ],
   },
   {
     timestamps: true, // Adds createdAt and updatedAt

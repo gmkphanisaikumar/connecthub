@@ -13,6 +13,9 @@ import Search from './pages/Search';
 import Chat from './pages/Chat';
 import Notifications from './pages/Notifications';
 import Settings from './pages/Settings';
+import Trending from './pages/Trending';
+import SavedPosts from './pages/SavedPosts';
+import Analytics from './pages/Analytics';
 
 function App() {
   const { isAuthenticated, loading } = useAuth();
@@ -40,11 +43,12 @@ function App() {
           duration: 3000,
           style: {
             borderRadius: '12px',
-            background: '#1f2937',
-            color: '#f9fafb',
+            background: '#0f172a',
+            color: '#f8fafc',
             fontSize: '14px',
             fontWeight: '500',
             padding: '12px 20px',
+            border: '1px solid rgba(14, 165, 233, 0.2)',
           },
         }}
       />
@@ -89,6 +93,30 @@ function App() {
         />
 
         {/* Protected feature routes */}
+        <Route
+          path="/trending"
+          element={
+            <ProtectedRoute>
+              <Trending />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/saved"
+          element={
+            <ProtectedRoute>
+              <SavedPosts />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/analytics"
+          element={
+            <ProtectedRoute>
+              <Analytics />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/profile/:username"
           element={
@@ -138,3 +166,4 @@ function App() {
 }
 
 export default App;
+

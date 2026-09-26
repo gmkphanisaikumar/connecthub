@@ -58,6 +58,7 @@ const register = async (req, res) => {
         profilePicture: user.profilePicture,
         followers: user.followers,
         following: user.following,
+        savedPosts: user.savedPosts || [],
       },
     });
   } catch (error) {
@@ -131,6 +132,7 @@ const login = async (req, res) => {
         bio: user.bio,
         followers: user.followers,
         following: user.following,
+        savedPosts: user.savedPosts || [],
       },
     });
   } catch (error) {
