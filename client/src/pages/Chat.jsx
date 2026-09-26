@@ -209,7 +209,7 @@ const Chat = () => {
                       }}
                       className="flex items-center gap-3 w-full px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                     >
-                      <div className="w-9 h-9 bg-gradient-to-br from-primary-400 to-purple-500 rounded-full flex items-center justify-center">
+                      <div className="w-9 h-9 bg-gradient-to-br from-teal-400 via-cyan-500 to-emerald-400 rounded-full flex items-center justify-center shadow-sm">
                         <span className="text-white text-sm font-bold">
                           {(u.username?.[0] || 'U').toUpperCase()}
                         </span>
@@ -262,7 +262,7 @@ const Chat = () => {
                       }`}
                     >
                       <div className="relative shrink-0">
-                        <div className="w-12 h-12 bg-gradient-to-br from-primary-400 to-purple-500 rounded-full flex items-center justify-center">
+                        <div className="w-12 h-12 bg-gradient-to-br from-teal-400 via-cyan-500 to-emerald-400 rounded-full flex items-center justify-center shadow-sm">
                           {conv.user.profilePicture ? (
                             <img
                               src={getImageUrl(conv.user.profilePicture)}
@@ -310,8 +310,8 @@ const Chat = () => {
           <div className="flex-1 flex flex-col">
             {!selectedUser ? (
               <div className="flex-1 flex flex-col items-center justify-center text-center px-8">
-                <div className="w-20 h-20 bg-gradient-to-br from-primary-100 to-purple-100 dark:from-primary-900/30 dark:to-purple-900/30 rounded-full flex items-center justify-center mb-4">
-                  <HiOutlineChatAlt2 className="text-4xl text-primary-400" />
+                <div className="w-20 h-20 bg-gradient-to-br from-teal-100 to-cyan-100 dark:from-teal-900/30 dark:to-cyan-900/30 rounded-full flex items-center justify-center mb-4 shadow-inner">
+                  <HiOutlineChatAlt2 className="text-4xl text-teal-500" />
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
                   Select a conversation
@@ -325,7 +325,7 @@ const Chat = () => {
                 {/* Chat Header */}
                 <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-100 dark:border-gray-800">
                   <div className="relative">
-                    <div className="w-10 h-10 bg-gradient-to-br from-primary-400 to-purple-500 rounded-full flex items-center justify-center">
+                    <div className="w-10 h-10 bg-gradient-to-br from-teal-400 via-cyan-500 to-emerald-400 rounded-full flex items-center justify-center shadow-sm">
                       {selectedUser.profilePicture ? (
                         <img
                           src={getImageUrl(selectedUser.profilePicture)}
@@ -339,7 +339,7 @@ const Chat = () => {
                       )}
                     </div>
                     {onlineUsers.includes(selectedUser._id) && (
-                      <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white dark:border-gray-900" />
+                      <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white dark:border-gray-900" />
                     )}
                   </div>
                   <div>
@@ -371,7 +371,7 @@ const Chat = () => {
                           className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}
                         >
                           {!isOwn && (
-                            <div className="w-7 h-7 bg-gradient-to-br from-primary-400 to-purple-500 rounded-full flex items-center justify-center mr-2 mt-1 shrink-0">
+                            <div className="w-7 h-7 bg-gradient-to-br from-teal-400 via-cyan-500 to-emerald-400 rounded-full flex items-center justify-center mr-2 mt-1 shrink-0 shadow-sm">
                               <span className="text-white text-xs font-bold">
                                 {(selectedUser.username?.[0] || 'U').toUpperCase()}
                               </span>

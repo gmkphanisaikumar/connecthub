@@ -119,7 +119,7 @@ const PostCard = ({ post, onPostUpdated, onPostDeleted }) => {
           to={`/profile/${post.user?.username}`}
           className="flex items-center gap-3 group"
         >
-          <div className="w-11 h-11 bg-gradient-to-br from-primary-400 to-purple-500 rounded-full flex items-center justify-center shadow-md shadow-primary-500/15">
+          <div className="w-11 h-11 bg-gradient-to-br from-teal-400 via-cyan-500 to-emerald-400 rounded-full flex items-center justify-center shadow-md shadow-teal-500/15">
             {post.user?.profilePicture ? (
               <img
                 src={getImageUrl(post.user.profilePicture)}
@@ -277,7 +277,7 @@ const PostCard = ({ post, onPostUpdated, onPostDeleted }) => {
         <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
           {/* Comment input */}
           <form onSubmit={handleComment} className="flex gap-3 mb-4">
-            <div className="w-8 h-8 bg-gradient-to-br from-primary-400 to-purple-500 rounded-full flex items-center justify-center shrink-0">
+            <div className="w-8 h-8 bg-gradient-to-br from-teal-400 via-cyan-500 to-emerald-400 rounded-full flex items-center justify-center shrink-0">
               <span className="text-white text-xs font-bold">
                 {(user?.username?.[0] || 'U').toUpperCase()}
               </span>

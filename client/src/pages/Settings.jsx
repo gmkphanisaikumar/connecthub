@@ -94,9 +94,9 @@ const Settings = () => {
         {/* ===== Appearance ===== */}
         <div className="card">
           <div className="flex items-center gap-3 mb-5">
-            <div className="w-9 h-9 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center">
+            <div className="w-9 h-9 bg-cyan-100 dark:bg-cyan-900/30 rounded-xl flex items-center justify-center">
               {darkMode ? (
-                <HiOutlineMoon className="text-purple-600 dark:text-purple-400 text-xl" />
+                <HiOutlineMoon className="text-cyan-600 dark:text-cyan-400 text-xl" />
               ) : (
                 <HiOutlineSun className="text-amber-500 text-xl" />
               )}

@@ -148,7 +148,7 @@ const Notifications = () => {
                 >
                   {/* Sender avatar */}
                   <Link to={`/profile/${notif.sender?.username}`} className="shrink-0">
-                    <div className="w-11 h-11 bg-gradient-to-br from-primary-400 to-purple-500 rounded-full flex items-center justify-center">
+                    <div className="w-11 h-11 bg-gradient-to-br from-teal-400 via-cyan-500 to-emerald-400 rounded-full flex items-center justify-center shadow-sm">
                       {notif.sender?.profilePicture ? (
                         <img
                           src={getImageUrl(notif.sender.profilePicture)}

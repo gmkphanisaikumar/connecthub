@@ -38,23 +38,23 @@ const Login = () => {
   return (
     <div className="min-h-screen flex">
       {/* ===== Left Side: Branding Panel ===== */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary-600 via-primary-700 to-purple-800 relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-teal-700 via-cyan-800 to-slate-900 relative overflow-hidden">
         {/* Decorative circles */}
         <div className="absolute top-20 left-20 w-72 h-72 bg-white/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 right-20 w-96 h-96 bg-purple-400/10 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-primary-400/20 rounded-full blur-2xl" />
+        <div className="absolute bottom-20 right-20 w-96 h-96 bg-cyan-400/15 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-emerald-400/20 rounded-full blur-2xl" />
 
         <div className="relative z-10 flex flex-col justify-center items-center w-full p-12 text-white">
           {/* Logo */}
           <div className="mb-8">
-            <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-6 mx-auto shadow-2xl">
+            <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-6 mx-auto shadow-2xl border border-white/20">
               <span className="text-4xl font-bold">C</span>
             </div>
             <h1 className="text-5xl font-extrabold tracking-tight text-center">
-              Connect<span className="text-primary-200">Hub</span>
+              Connect<span className="bg-clip-text text-transparent bg-gradient-to-r from-teal-300 to-cyan-200">Hub</span>
             </h1>
           </div>
-          <p className="text-xl text-primary-100 text-center max-w-md leading-relaxed">
+          <p className="text-xl text-teal-100 text-center max-w-md leading-relaxed">
             Connect, share, and grow with people who matter to you.
           </p>
 
@@ -62,15 +62,15 @@ const Login = () => {
           <div className="mt-12 grid grid-cols-3 gap-8 text-center">
             <div>
               <div className="text-3xl font-bold">10K+</div>
-              <div className="text-primary-200 text-sm mt-1">Users</div>
+              <div className="text-teal-200 text-sm mt-1">Users</div>
             </div>
             <div>
               <div className="text-3xl font-bold">50K+</div>
-              <div className="text-primary-200 text-sm mt-1">Posts</div>
+              <div className="text-teal-200 text-sm mt-1">Posts</div>
             </div>
             <div>
               <div className="text-3xl font-bold">100K+</div>
-              <div className="text-primary-200 text-sm mt-1">Connections</div>
+              <div className="text-teal-200 text-sm mt-1">Connections</div>
             </div>
           </div>
         </div>
@@ -81,7 +81,7 @@ const Login = () => {
         <div className="w-full max-w-md">
           {/* Mobile logo (shown only on small screens) */}
           <div className="lg:hidden text-center mb-8">
-            <div className="w-14 h-14 bg-primary-600 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-primary-500/25">
+            <div className="w-14 h-14 bg-gradient-to-tr from-teal-500 to-cyan-500 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-teal-500/25">
               <span className="text-2xl font-bold text-white">C</span>
             </div>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white">

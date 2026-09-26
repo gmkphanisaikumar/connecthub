@@ -180,18 +180,18 @@ const Profile = () => {
         {/* ===== Profile Header Card ===== */}
         <div className="card mb-6 p-0 overflow-hidden">
           {/* Cover Photo */}
-          <div className="h-44 bg-gradient-to-br from-primary-500 via-purple-500 to-pink-500 relative">
+          <div className="h-44 bg-gradient-to-br from-teal-600 via-cyan-600 to-emerald-500 relative">
             <div className="absolute inset-0 bg-black/10" />
             {/* Decorative pattern */}
             <div className="absolute top-6 right-8 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
-            <div className="absolute bottom-4 left-12 w-48 h-48 bg-purple-300/10 rounded-full blur-3xl" />
+            <div className="absolute bottom-4 left-12 w-48 h-48 bg-cyan-300/15 rounded-full blur-3xl" />
           </div>
 
           {/* Profile Info */}
           <div className="px-6 pb-6">
             {/* Avatar + Actions row */}
             <div className="flex items-end justify-between -mt-14 mb-4">
-              <div className="w-28 h-28 bg-gradient-to-br from-primary-400 to-purple-500 rounded-full border-4 border-white dark:border-gray-900 flex items-center justify-center shadow-xl shadow-primary-500/20">
+              <div className="w-28 h-28 bg-gradient-to-br from-teal-400 via-cyan-500 to-emerald-400 rounded-full border-4 border-white dark:border-gray-900 flex items-center justify-center shadow-xl shadow-teal-500/20">
                 {profileUser.profilePicture ? (
                   <img
                     src={getImageUrl(profileUser.profilePicture)}
@@ -359,7 +359,7 @@ const Profile = () => {
                 {/* Profile Picture Upload */}
                 <div className="flex flex-col items-center mb-4">
                   <div className="relative group">
-                    <div className="w-24 h-24 bg-gradient-to-br from-primary-400 to-purple-500 rounded-full flex items-center justify-center overflow-hidden">
+                    <div className="w-24 h-24 bg-gradient-to-br from-teal-400 via-cyan-500 to-emerald-400 rounded-full flex items-center justify-center overflow-hidden shadow-md">
                       {editPreview || profileUser.profilePicture ? (
                         <img
                           src={

@@ -69,11 +69,11 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group">
-            <div className="w-9 h-9 bg-gradient-to-br from-primary-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/20 group-hover:shadow-primary-500/40 transition-shadow">
+            <div className="w-9 h-9 bg-gradient-to-br from-teal-500 via-cyan-500 to-emerald-500 rounded-xl flex items-center justify-center shadow-lg shadow-teal-500/20 group-hover:shadow-teal-500/40 transition-shadow">
               <span className="text-white font-bold text-lg">C</span>
             </div>
             <span className="text-xl font-bold text-gray-900 dark:text-white hidden sm:block">
-              Connect<span className="text-primary-600">Hub</span>
+              Connect<span className="bg-clip-text text-transparent bg-gradient-to-r from-teal-500 to-cyan-500">Hub</span>
             </span>
           </Link>
 
@@ -88,14 +88,14 @@ const Navbar = () => {
                   to={item.path}
                   className={`relative flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
                     isActive
-                      ? 'bg-primary-50 text-primary-600 dark:bg-primary-900/30 dark:text-primary-400'
+                      ? 'bg-teal-50 text-teal-600 dark:bg-teal-900/30 dark:text-teal-400 font-semibold'
                       : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800'
                   }`}
                 >
                   <span className="relative">
                     <item.icon className="text-xl" />
                     {isNotif && unreadCount > 0 && (
-                      <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[16px] h-4 flex items-center justify-center px-0.5">
+                      <span className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white text-[10px] font-bold rounded-full min-w-[16px] h-4 flex items-center justify-center px-0.5 shadow-sm">
                         {unreadCount > 9 ? '9+' : unreadCount}
                       </span>
                     )}
@@ -113,7 +113,7 @@ const Navbar = () => {
               to={`/profile/${user?.username}`}
               className="flex items-center gap-2 px-3 py-1.5 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             >
-              <div className="w-8 h-8 bg-gradient-to-br from-primary-400 to-purple-500 rounded-full flex items-center justify-center">
+              <div className="w-8 h-8 bg-gradient-to-br from-teal-400 via-cyan-500 to-emerald-400 rounded-full flex items-center justify-center shadow-sm">
                 {user?.profilePicture ? (
                   <img
                     src={getImageUrl(user.profilePicture)}

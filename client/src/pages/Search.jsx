@@ -87,7 +87,7 @@ const Search = () => {
           to={`/profile/${userItem.username}`}
           className="flex items-center gap-3 flex-1 min-w-0"
         >
-          <div className="w-12 h-12 bg-gradient-to-br from-primary-400 to-purple-500 rounded-full flex items-center justify-center shrink-0 shadow-md shadow-primary-500/15">
+          <div className="w-12 h-12 bg-gradient-to-br from-teal-400 via-cyan-500 to-emerald-400 rounded-full flex items-center justify-center shrink-0 shadow-md shadow-teal-500/15">
             {userItem.profilePicture ? (
               <img
                 src={getImageUrl(userItem.profilePicture)}

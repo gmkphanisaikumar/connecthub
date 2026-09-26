@@ -78,7 +78,7 @@ const CreatePost = ({ onPostCreated }) => {
       <form onSubmit={handleSubmit}>
         <div className="flex gap-3">
           {/* User avatar */}
-          <div className="w-11 h-11 bg-gradient-to-br from-primary-400 to-purple-500 rounded-full flex items-center justify-center shrink-0 shadow-md shadow-primary-500/15">
+          <div className="w-11 h-11 bg-gradient-to-br from-teal-400 via-cyan-500 to-emerald-400 rounded-full flex items-center justify-center shrink-0 shadow-md shadow-teal-500/15">
             {user?.profilePicture ? (
               <img
                 src={getImageUrl(user.profilePicture)}

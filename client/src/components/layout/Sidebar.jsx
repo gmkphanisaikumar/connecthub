@@ -17,7 +17,7 @@ const Sidebar = () => {
         {/* Profile Card */}
         <div className="card">
           <div className="flex flex-col items-center text-center">
-            <div className="w-16 h-16 bg-gradient-to-br from-primary-400 to-purple-500 rounded-full flex items-center justify-center mb-3 shadow-lg shadow-primary-500/20">
+            <div className="w-16 h-16 bg-gradient-to-br from-teal-400 via-cyan-500 to-emerald-400 rounded-full flex items-center justify-center mb-3 shadow-lg shadow-teal-500/20">
               {user?.profilePicture ? (
                 <img
                   src={getImageUrl(user.profilePicture)}
@@ -89,8 +89,8 @@ const Sidebar = () => {
 
         {/* Footer */}
         <div className="px-4 text-xs text-gray-400 dark:text-gray-600">
-          <p>© 2024 ConnectHub</p>
-          <p className="mt-1">Built with ❤️ for learning</p>
+          <p>© ConnectHub</p>
+          <p className="mt-1">Connect, share & chat anytime.</p>
         </div>
       </div>
     </aside>

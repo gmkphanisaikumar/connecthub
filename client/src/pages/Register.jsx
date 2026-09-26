@@ -64,27 +64,27 @@ const Register = () => {
   return (
     <div className="min-h-screen flex">
       {/* ===== Left Side: Branding Panel ===== */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-purple-700 via-primary-700 to-primary-600 relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-teal-700 via-cyan-800 to-slate-900 relative overflow-hidden">
         {/* Decorative elements */}
         <div className="absolute top-10 right-10 w-80 h-80 bg-white/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-10 left-10 w-96 h-96 bg-purple-400/10 rounded-full blur-3xl" />
-        <div className="absolute top-1/3 left-1/3 w-40 h-40 bg-primary-300/20 rounded-full blur-xl" />
+        <div className="absolute bottom-10 left-10 w-96 h-96 bg-emerald-400/15 rounded-full blur-3xl" />
+        <div className="absolute top-1/3 left-1/3 w-40 h-40 bg-cyan-300/20 rounded-full blur-xl" />
 
         <div className="relative z-10 flex flex-col justify-center items-center w-full p-12 text-white">
           <div className="mb-8">
-            <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-6 mx-auto shadow-2xl">
+            <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-6 mx-auto shadow-2xl border border-white/20">
               <span className="text-4xl font-bold">C</span>
             </div>
             <h1 className="text-5xl font-extrabold tracking-tight text-center">
-              Connect<span className="text-primary-200">Hub</span>
+              Connect<span className="bg-clip-text text-transparent bg-gradient-to-r from-teal-300 to-cyan-200">Hub</span>
             </h1>
           </div>
-          <p className="text-xl text-primary-100 text-center max-w-md leading-relaxed">
+          <p className="text-xl text-teal-100 text-center max-w-md leading-relaxed">
             Join thousands of people sharing ideas, stories, and connections.
           </p>
 
           {/* Features list */}
-          <div className="mt-12 space-y-4 text-primary-100">
+          <div className="mt-12 space-y-4 text-teal-100">
             {[
               '🚀 Share posts with photos and videos',
               '💬 Real-time chat with friends',
@@ -104,7 +104,7 @@ const Register = () => {
         <div className="w-full max-w-md">
           {/* Mobile logo */}
           <div className="lg:hidden text-center mb-6">
-            <div className="w-14 h-14 bg-primary-600 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-primary-500/25">
+            <div className="w-14 h-14 bg-gradient-to-tr from-teal-500 to-cyan-500 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-teal-500/25">
               <span className="text-2xl font-bold text-white">C</span>
             </div>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
